@@ -1,0 +1,234 @@
+:root {
+    --main-bg-color: #edf5fe;
+    --light-blue: #03a9f4;
+    --dark-blue: #028bca;
+    --border-color: #0288d147;
+    --container-width: 500px;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: var(--main-bg-color);
+    height: 98vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #333;
+    margin: 0;
+}
+
+.logo {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 150px;
+}
+
+/* ============================
+    UPLOAD PAGE (index.html)
+   ============================ */
+.upload-container {
+    background: #ffffff;
+    border-radius: 25px;
+    box-shadow: 0px 20px 20px 0px #00000017;
+    width: var(--container-width);
+    max-width: 90%;
+    padding: 40px;
+    text-align: center;
+}
+
+.drop-zone {
+    width: 100%;
+    min-height: 200px;
+    border: 2px dashed var(--border-color);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: all .2s ease;
+    margin-bottom: 20px;
+}
+
+.drop-zone.dragged {
+    background: var(--main-bg-color);
+    border-color: var(--light-blue);
+}
+
+.drop-zone input {
+    display: none;
+}
+
+.icon-container {
+    width: 75px;
+    height: 100px;
+    position: relative;
+}
+
+.icon-container img {
+    width: 75px;
+    position: absolute;
+    transform-origin: bottom;
+    transition: transform .25s ease-in-out;
+}
+
+.icon-container .center { z-index: 10; }
+.icon-container .left { transform: rotate(-10deg) scale(0.9); }
+.icon-container .right { transform: rotate(10deg) scale(0.9); }
+
+.drop-zone.dragged .left { transform: rotate(-20deg) scale(0.9) translateX(-20px); }
+.drop-zone.dragged .right { transform: rotate(20deg) scale(0.9) translateX(20px); }
+.drop-zone.dragged .center { transform: translateY(-5px); }
+
+#browseBtn {
+    color: var(--light-blue);
+    cursor: pointer;
+}
+
+/* Progress Bar */
+.progress-container {
+    display: none;
+    width: 100%;
+    height: 70px;
+    border: 2px solid var(--main-bg-color);
+    border-radius: 10px;
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.bg-progress {
+    background: var(--main-bg-color);
+    width: 100%;
+    height: 100%;
+    transform-origin: left;
+    transform: scaleX(0);
+    transition: width .25s linear;
+    position: absolute;
+    border-radius: 10px;
+}
+
+.inner-container {
+    position: absolute;
+    z-index: 1;
+    margin: 10px 15px;
+    width: calc(100% - 30px);
+}
+
+.percent-container {
+    font-size: 14px;
+    margin-bottom: 5px;
+    text-align: right;
+    opacity: 0.7;
+}
+
+.progress-bar {
+    height: 3px;
+    background: var(--light-blue);
+    width: 100%;
+    transform-origin: left;
+    transform: scaleX(0);
+    border-radius: 10px;
+    transition: transform .25s linear;
+}
+
+/* Sharing Container */
+.sharing-container {
+    display: none;
+    margin-top: 20px;
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-container input {
+    width: 100%;
+    box-sizing: border-box; /* Ensures padding doesn't break the container width */
+    border: 2px dashed var(--border-color);
+    border-radius: 6px;
+    padding: 10px 45px 10px 15px; /* Added 45px right padding to push text away from the icon */
+    font-size: 16px;
+    background: var(--main-bg-color);
+    color: #000;
+}
+
+.input-container img {
+    position: absolute;
+    right: 12px;
+    cursor: pointer;
+    width: 22px;
+    height: 22px;
+    filter: invert(0.6) sepia(1) hue-rotate(180deg) saturate(200%);
+    transition: transform 0.2s ease;
+}
+
+.input-container img:hover {
+    transform: scale(1.1); /* Adds a nice little pop effect when they hover over it */
+}
+
+/* Show Email Form for Demo / Phase 2 */
+.email-container, .email-info {
+    display: block; 
+}
+
+/* Notifications */
+.toast {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translate(-50%, 60px);
+    background: var(--light-blue);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0px 10px 15px -3px rgba(0, 0, 0, 0.1);
+    transition: transform .2s ease-in-out;
+}
+
+.toast.show {
+    transform: translate(-50%, 0);
+}
+
+/* ============================
+    DOWNLOAD PAGE (download.ejs)
+   ============================ */
+section.download {
+    background: #fff;
+    width: 430px;
+    max-width: 90%;
+    border-radius: 25px;
+    box-shadow: 0px 20px 20px 0px #00000017;
+    padding: 2rem;
+    text-align: center;
+}
+.download__icon {
+    height: 8rem;
+}
+.download__meta h4 {
+    margin-bottom: 0;
+    line-height: 1.3;
+}
+.send-btn-container a {
+    display: inline-block;
+    font-size: 18px;
+    padding: 8px 40px;
+    margin-top: 15px;
+    background: var(--light-blue);
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    color: #fff;
+    cursor: pointer;
+    transition: all .3s ease-in-out;
+}
+
+.send-btn-container a:hover {
+    background: var(--dark-blue);
+}
+
+.github-corner {
+    display: none; /* Hide the creator's github link */
+}
