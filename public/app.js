@@ -15,9 +15,9 @@ const emailForm = document.querySelector("#emailForm");
 
 const toast = document.querySelector(".toast");
 
-const baseURL = "http://localhost:3000";
-const uploadURL = `${baseURL}/api/files`;
-const emailURL = `${baseURL}/api/files/send`;
+const host = window.location.origin;
+const uploadURL = `${host}/api/files`;
+const emailURL = `${host}/api/files/send`;
 
 const maxAllowedSize = 100 * 1024 * 1024; //100mb
 
