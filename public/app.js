@@ -153,8 +153,8 @@ emailForm.addEventListener("submit", (e) => {
     },
     body: JSON.stringify({
       uuid,
-      emailTo: emailForm.elements[0].value,
-      emailFrom: emailForm.elements[1].value,
+      emailTo: emailForm.elements["to-email"].value,
+      emailFrom: emailForm.elements["from-email"].value,
     }),
   })
     .then((res) => res.json())
