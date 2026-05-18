@@ -54,59 +54,81 @@ fileInput.addEventListener("change", () => {
 
 function uploadFile(){
 
+    if(!fileInput.files.length) return;
+
     progressContainer.style.display = "block";
+    document.querySelector(".status").innerText = "Uploading...";
 
-    let percent = 0;
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append("myfile", file);
 
-    const uploadAnimation =
-    setInterval(() => {
+    const xhr = new XMLHttpRequest();
 
-        percent++;
+    xhr.upload.onprogress = function(event) {
+        if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            progressBar.style.width = `${percent}%`;
+            progressPercent.innerText = percent;
+            progressBar.style.boxShadow = `
+            0 0 ${10 + percent/5}px #00d9ff,
+            0 0 ${20 + percent/3}px #00d9ff
+            `;
 
-        progressBar.style.width =
-        `${percent}%`;
-
-        progressPercent.innerText =
-        percent;
-
-        progressBar.style.boxShadow = `
-        0 0 ${10 + percent/5}px #00d9ff,
-        0 0 ${20 + percent/3}px #00d9ff
-        `;
-
-        if(percent >= 100){
-
-            clearInterval(uploadAnimation);
-
-            document.querySelector(".status")
-            .innerText =
-            "Transfer Complete ⚡";
-
-            showOutput();
-
+            if(percent >= 100){
+                document.querySelector(".status").innerText = "Processing...";
+            }
         }
+    };
 
-    },35);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+            if (xhr.status === 200) {
+                document.querySelector(".status").innerText = "Transfer Complete ⚡";
+                const response = JSON.parse(xhr.response);
+                showOutput(response.file);
+            } else {
+                document.querySelector(".status").innerText = "Error in transfer!";
+            }
+        }
+    };
 
+    xhr.open("POST", "/api/files");
+    xhr.send(formData);
 }
 
 // SHOW RESULT
 
-function showOutput(){
+function showOutput(url){
 
     sharingContainer.style.display =
     "block";
 
-    const sampleURL =
-    "https://transferra.onrender.com/files/sample";
+    fileURL.value = url;
 
-    fileURL.value = sampleURL;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+    qrCode.src = qrUrl;
 
-    qrCode.src =
-    `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${sampleURL}`;
+    downloadBtn.onclick = async (e) => {
+        e.preventDefault();
+        try {
+            const response = await fetch(qrUrl);
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+            
+            const a = document.createElement("a");
+            a.href = blobUrl;
+            a.download = "Transferra-QR.png";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error("Error downloading QR code:", error);
+        }
+    };
 
-    downloadBtn.href = sampleURL;
-
+    toast.innerText = "File Uploaded Successfully ⚡";
     toast.classList.add("show");
 
     setTimeout(() => {
@@ -123,8 +145,25 @@ copyBtn.addEventListener("click", () => {
 
     fileURL.select();
 
-    document.execCommand("copy");
+    // Use modern Clipboard API with fallback
+    if (navigator.clipboard) {
+        navigator.clipboard.writeText(fileURL.value).then(() => {
+            toast.innerText = "Link copied to clipboard ✅";
+            toast.classList.add("show");
 
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        });
+    } else {
+        document.execCommand("copy");
+        toast.innerText = "Link copied to clipboard ✅";
+        toast.classList.add("show");
+
+        setTimeout(() => {
+            toast.classList.remove("show");
+        }, 3000);
+    }
 });
 
 // SHARE API
