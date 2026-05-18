@@ -1,0 +1,293 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+
+    overflow:hidden;
+
+    font-family:Arial, sans-serif;
+
+    background:black;
+}
+
+/* BACKGROUND IMAGE */
+
+.bg-image{
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100vh;
+
+    background-image:
+    linear-gradient(
+    rgba(0,0,0,0.45),
+    rgba(0,0,0,0.65)
+    ),
+
+    url("/public/img/worldbg.png");
+
+    background-size:cover;
+
+    background-position:center;
+
+    background-repeat:no-repeat;
+
+    z-index:-1;
+
+    opacity:0.9;
+
+    animation:
+    zoomBg 12s ease-in-out infinite alternate;
+}
+
+/* PARTICLES */
+
+.particles{
+
+    position:fixed;
+
+    width:100%;
+    height:100vh;
+
+    background-image:
+    radial-gradient(#00d9ff 1px, transparent 1px);
+
+    background-size:50px 50px;
+
+    opacity:0.08;
+
+    animation:
+    moveParticles 15s linear infinite;
+
+    pointer-events:none;
+
+    z-index:-2;
+}
+
+/* LOGO */
+
+.topLogo{
+
+    position:fixed;
+
+    top:20px;
+    left:30px;
+
+    z-index:10000;
+}
+
+.topLogo img{
+
+    width:180px;
+
+    filter:
+    drop-shadow(0 0 10px #00d9ff)
+    drop-shadow(0 0 30px #00d9ff);
+}
+
+/* VIDEO INTRO */
+
+#intro{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:9999;
+
+    overflow:hidden;
+
+    transition:1.5s ease;
+}
+
+#intro video{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+}
+
+/* OVERLAY */
+
+.overlay{
+
+    position:absolute;
+
+    inset:0;
+
+    background:
+    linear-gradient(
+    rgba(0,0,0,0.3),
+    rgba(0,0,0,0.7)
+    );
+}
+
+/* WELCOME SCREEN */
+
+#welcomePage{
+
+    position:fixed;
+
+    inset:0;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+
+    opacity:0;
+    visibility:hidden;
+
+    transition:1.5s ease;
+
+    z-index:100;
+}
+
+#welcomePage.show{
+
+    opacity:1;
+    visibility:visible;
+}
+
+/* CONTENT */
+
+.welcomeContent{
+
+    color:white;
+
+    animation:
+    fadeUp 1.5s ease;
+}
+
+.welcomeContent h1{
+
+    font-size:5rem;
+
+    margin-bottom:20px;
+
+    text-shadow:
+    0 0 15px #00d9ff,
+    0 0 40px #00d9ff;
+}
+
+.welcomeContent span{
+
+    color:#00d9ff;
+}
+
+.welcomeContent p{
+
+    font-size:1.2rem;
+
+    opacity:0.8;
+
+    margin-bottom:40px;
+}
+
+/* BUTTON */
+
+#exploreBtn{
+
+    display:inline-block;
+
+    padding:15px 45px;
+
+    border-radius:50px;
+
+    text-decoration:none;
+
+    background:
+    linear-gradient(
+    90deg,
+    #00d9ff,
+    #00a6ff
+    );
+
+    color:white;
+
+    font-weight:bold;
+
+    transition:0.4s ease;
+
+    box-shadow:
+    0 0 15px #00d9ff;
+}
+
+#exploreBtn:hover{
+
+    transform:translateY(-5px);
+
+    box-shadow:
+    0 0 25px #00d9ff,
+    0 0 50px #00d9ff;
+}
+
+/* ANIMATIONS */
+
+@keyframes fadeUp{
+
+    from{
+
+        opacity:0;
+
+        transform:
+        translateY(40px);
+
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:
+        translateY(0);
+
+    }
+
+}
+
+@keyframes moveParticles{
+
+    from{
+
+        transform:
+        translateY(0);
+
+    }
+
+    to{
+
+        transform:
+        translateY(-100px);
+
+    }
+
+}
+
+@keyframes zoomBg{
+
+    from{
+
+        transform:
+        scale(1);
+
+    }
+
+    to{
+
+        transform:
+        scale(1.08);
+
+    }
+
+}

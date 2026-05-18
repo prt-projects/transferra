@@ -1,8 +1,4 @@
 require('dotenv').config();
-const fs = require('fs');
-if (!fs.existsSync('./uploads')){
-    fs.mkdirSync('./uploads');
-}
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -17,7 +13,13 @@ const corsOptions = {
   // ['http://localhost:3000', 'http://localhost:5000', 'http://localhost:3300']
 }
 
-
+// Default configuration looks like
+// {
+//     "origin": "*",
+//     "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+//     "preflightContinue": false,
+//     "optionsSuccessStatus": 204
+//   }
 
 app.use(cors(corsOptions))
 app.use(express.static('public'));
@@ -37,3 +39,8 @@ app.use('/files/download', require('./routes/download'));
 
 
 app.listen(PORT, console.log(`Listening on port ${PORT}.`));
+app.get("/", (req,res)=>{
+
+    res.sendFile(__dirname + "/public/home.html");
+
+});

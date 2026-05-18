@@ -1,231 +1,148 @@
-const dropZone = document.querySelector(".drop-zone");
-const fileInput = document.querySelector("#fileInput");
-const browseBtn = document.querySelector("#browseBtn");
+const fileInput =
+document.getElementById("fileInput");
 
-const bgProgress = document.querySelector(".bg-progress");
-const progressPercent = document.querySelector("#progressPercent");
-const progressContainer = document.querySelector(".progress-container");
-const progressBar = document.querySelector(".progress-bar");
-const status = document.querySelector(".status");
+const browseBtn =
+document.getElementById("browseBtn");
 
-const sharingContainer = document.querySelector(".sharing-container");
-const copyURLBtn = document.querySelector("#copyURLBtn");
-const fileURL = document.querySelector("#fileURL");
-const emailForm = document.querySelector("#emailForm");
+const progressContainer =
+document.querySelector(".progress-container");
 
-const toast = document.querySelector(".toast");
+const progressBar =
+document.querySelector(".progress-bar");
 
-const host = window.location.origin;
-const uploadURL = `${host}/api/files`;
-const emailURL = `${host}/api/files/send`;
+const progressPercent =
+document.getElementById("progressPercent");
 
-const maxAllowedSize = 100 * 1024 * 1024; //100mb
+const sharingContainer =
+document.querySelector(".sharing-container");
 
+const fileURL =
+document.getElementById("fileURL");
+
+const copyBtn =
+document.getElementById("copyURLBtn");
+
+const toast =
+document.querySelector(".toast");
+
+const qrCode =
+document.getElementById("qrCode");
+
+const downloadBtn =
+document.getElementById("downloadBtn");
+
+const shareBtn =
+document.getElementById("shareBtn");
+
+// OPEN FILE
 
 browseBtn.addEventListener("click", () => {
-  fileInput.click();
+
+    fileInput.click();
+
 });
 
-dropZone.addEventListener("drop", (e) => {
-  e.preventDefault();
-  //   console.log("dropped", e.dataTransfer.files[0].name);
-  const files = e.dataTransfer.files;
-  if (files.length === 1) {
-    if (files[0].size < maxAllowedSize) {
-      fileInput.files = files;
-      uploadFile();
-    } else {
-      showToast("Max file size is 100MB");
-    }
-  } else if (files.length > 1) {
-    showToast("You can't upload multiple files");
-  }
-  dropZone.classList.remove("dragged");
-});
+// FILE SELECT
 
-dropZone.addEventListener("dragover", (e) => {
-  e.preventDefault();
-  dropZone.classList.add("dragged");
-
-  // console.log("dropping file");
-});
-
-dropZone.addEventListener("dragleave", (e) => {
-  dropZone.classList.remove("dragged");
-
-  console.log("drag ended");
-});
-
-// file input change and uploader
 fileInput.addEventListener("change", () => {
-  if (fileInput.files[0].size > maxAllowedSize) {
-    showToast("Max file size is 100MB");
-    fileInput.value = ""; // reset the input
-    return;
-  }
-  uploadFile();
+
+    uploadFile();
+
 });
 
-// sharing container listenrs
-copyURLBtn.addEventListener("click", () => {
-  fileURL.select();
-  document.execCommand("copy");
-  showToast("Copied to clipboard");
-});
+// UPLOAD
 
-fileURL.addEventListener("click", () => {
-  fileURL.select();
-});
+function uploadFile(){
 
-const uploadFile = () => {
-  console.log("file added uploading");
+    progressContainer.style.display = "block";
 
-  files = fileInput.files;
-  const formData = new FormData();
-  formData.append("myfile", files[0]);
+    let percent = 0;
 
-  //show the uploader
-  progressContainer.style.display = "block";
+    const uploadAnimation =
+    setInterval(() => {
 
-  // upload file
-  const xhr = new XMLHttpRequest();
+        percent++;
 
-  // listen for upload progress
-  xhr.upload.onprogress = function (event) {
-    // find the percentage of uploaded
-    let percent = Math.round((100 * event.loaded) / event.total);
-    progressPercent.innerText = percent;
-    const scaleX = `scaleX(${percent / 100})`;
-    bgProgress.style.transform = scaleX;
-    progressBar.style.transform = scaleX;
-  };
+        progressBar.style.width =
+        `${percent}%`;
 
-  // handle error
-  xhr.upload.onerror = function () {
-    showToast(`Error in upload: ${xhr.status}.`);
-    fileInput.value = ""; // reset the input
-  };
+        progressPercent.innerText =
+        percent;
 
-  // listen for response which will give the link
-  xhr.onreadystatechange = function () {
-    if (xhr.readyState == XMLHttpRequest.DONE) {
-      onFileUploadSuccess(xhr.responseText);
-    }
-  };
+        progressBar.style.boxShadow = `
+        0 0 ${10 + percent/5}px #00d9ff,
+        0 0 ${20 + percent/3}px #00d9ff
+        `;
 
-  xhr.open("POST", uploadURL);
-  xhr.send(formData);
-};
+        if(percent >= 100){
 
-const onFileUploadSuccess = (res) => {
-  fileInput.value = ""; // reset the input
-  status.innerText = "Uploaded";
+            clearInterval(uploadAnimation);
 
-  // remove the disabled attribute from form btn & make text send
-  emailForm[2].removeAttribute("disabled");
-  emailForm[2].innerText = "Send";
-  progressContainer.style.display = "none"; // hide the box
+            document.querySelector(".status")
+            .innerText =
+            "Transfer Complete ⚡";
 
-  const { file: url } = JSON.parse(res);
-  console.log(url);
-  sharingContainer.style.display = "block";
-  fileURL.value = url;
+            showOutput();
 
-  const qrContainer = document.querySelector("#qrcode");
-  qrContainer.innerHTML = "";
-  new QRCode(qrContainer, { text: url, width: 150, height: 150 });
-};
-
-emailForm.addEventListener("submit", (e) => {
-  e.preventDefault(); // stop submission
-
-  // disable the button
-  emailForm[2].setAttribute("disabled", "true");
-  emailForm[2].innerText = "Sending...";
-
-  const urlSegments = fileURL.value.trim().split("/");
-  const uuid = urlSegments[urlSegments.length - 1];
-
-  fetch(emailURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      uuid,
-      emailTo: emailForm.elements["to-email"].value,
-      emailFrom: emailForm.elements["from-email"].value,
-    }),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      if (data.success) {
-        showToast("Email Sent");
-        sharingContainer.style.display = "none";
-      }
-    })
-    .catch(() => {
-      showToast("Error sending email");
-    })
-    .finally(() => {
-      emailForm[2].removeAttribute("disabled");
-      emailForm[2].innerText = "Send";
-    });
-});
-
-let toastTimer;
-// the toast function
-const showToast = (msg) => {
-  clearTimeout(toastTimer);
-  toast.innerText = msg;
-  toast.classList.add("show");
-  toastTimer = setTimeout(() => {
-    toast.classList.remove("show");
-  }, 2000);
-};
-
-// --- QR CODE DOWNLOAD & SHARE LOGIC ---
-
-const downloadQRBtn = document.getElementById("downloadQRBtn");
-const shareQRBtn = document.getElementById("shareQRBtn");
-
-// 1. Download Feature
-downloadQRBtn.addEventListener("click", () => {
-    // The library creates either an img or a canvas
-    const qrElement = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
-    if (qrElement) {
-        const imageUrl = qrElement.src || qrElement.toDataURL("image/png");
-        const a = document.createElement("a");
-        a.href = imageUrl;
-        a.download = "Transferra-QR.png"; // Name of the downloaded file
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-    }
-});
-
-// 2. Native Share Feature (WhatsApp, Instagram, etc.)
-shareQRBtn.addEventListener("click", async () => {
-    const qrElement = document.querySelector("#qrcode img") || document.querySelector("#qrcode canvas");
-    
-    // Check if the browser supports the native share API
-    if (navigator.share && qrElement) {
-        try {
-            const imageUrl = qrElement.src || qrElement.toDataURL("image/png");
-            // Convert the image data into a real File object for sharing
-            const blob = await (await fetch(imageUrl)).blob();
-            const file = new File([blob], "Transferra-QR.png", { type: blob.type });
-            
-            await navigator.share({
-                title: 'Transferra File',
-                text: 'Scan this QR code to download my file!',
-                files: [file] // Attaches the image directly to the message!
-            });
-        } catch (err) {
-            console.log("Sharing cancelled or failed", err);
         }
-    } else {
-        // Fallback for older browsers
-        showToast("Native sharing is not supported on this device.");
+
+    },35);
+
+}
+
+// SHOW RESULT
+
+function showOutput(){
+
+    sharingContainer.style.display =
+    "block";
+
+    const sampleURL =
+    "https://transferra.onrender.com/files/sample";
+
+    fileURL.value = sampleURL;
+
+    qrCode.src =
+    `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${sampleURL}`;
+
+    downloadBtn.href = sampleURL;
+
+    toast.classList.add("show");
+
+    setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    },3000);
+
+}
+
+// COPY
+
+copyBtn.addEventListener("click", () => {
+
+    fileURL.select();
+
+    document.execCommand("copy");
+
+});
+
+// SHARE API
+
+shareBtn.addEventListener("click", async() => {
+
+    if(navigator.share){
+
+        await navigator.share({
+
+            title:"Transferra File",
+
+            text:"Download File",
+
+            url:fileURL.value
+
+        });
+
     }
+
 });
