@@ -22,6 +22,13 @@ const corsOptions = {
 //   }
 
 app.use(cors(corsOptions))
+
+// Make sure the root route serving home.html comes BEFORE express.static
+// so that it overrides the default index.html behavior.
+app.get("/", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "home.html"));
+});
+
 app.use(express.static('public'));
 
 const connectDB = require('./config/db');
@@ -39,8 +46,3 @@ app.use('/files/download', require('./routes/download'));
 
 
 app.listen(PORT, console.log(`Listening on port ${PORT}.`));
-app.get("/", (req,res)=>{
-
-    res.sendFile(__dirname + "/public/home.html");
-
-});
