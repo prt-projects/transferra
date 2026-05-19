@@ -142,14 +142,35 @@ function showOutput(url){
 // COPY
 
 copyBtn.addEventListener("click", () => {
-
+    
     fileURL.select();
+
+    const doVisualSwap = () => {
+        const inputContainer = copyBtn.parentElement;
+        
+        copyBtn.style.display = "none";
+        
+        const svgWrapper = document.createElement("div");
+        svgWrapper.innerHTML = `<svg viewBox="0 0 24 24" width="24" height="24" stroke="#00d9ff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+        const checkmark = svgWrapper.firstElementChild;
+        inputContainer.appendChild(checkmark);
+        
+        inputContainer.classList.add("copied");
+        
+        setTimeout(() => {
+            checkmark.remove();
+            copyBtn.style.display = "block";
+            inputContainer.classList.remove("copied");
+        }, 2000);
+    };
 
     // Use modern Clipboard API with fallback
     if (navigator.clipboard) {
         navigator.clipboard.writeText(fileURL.value).then(() => {
             toast.innerText = "Link copied to clipboard ✅";
             toast.classList.add("show");
+            
+            doVisualSwap();
 
             setTimeout(() => {
                 toast.classList.remove("show");
@@ -159,6 +180,8 @@ copyBtn.addEventListener("click", () => {
         document.execCommand("copy");
         toast.innerText = "Link copied to clipboard ✅";
         toast.classList.add("show");
+        
+        doVisualSwap();
 
         setTimeout(() => {
             toast.classList.remove("show");
