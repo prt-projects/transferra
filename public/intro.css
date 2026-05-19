@@ -291,3 +291,34 @@ body{
     }
 
 }
+
+/* =========================================
+   RESPONSIVE DESIGN (INTRO SCREEN)
+========================================= */
+
+@media screen and (max-width: 768px) {
+    .topLogo img {
+        width: 140px;
+    }
+
+    .welcomeContent h1 {
+        font-size: 3.5rem; /* Shrink massive heading */
+        padding: 0 15px;
+    }
+
+    .welcomeContent p {
+        font-size: 1rem;
+        padding: 0 20px;
+    }
+
+    #exploreBtn {
+        padding: 12px 35px;
+        font-size: 0.9rem;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    .welcomeContent h1 {
+        font-size: 2.5rem; /* Even smaller for very small phones */
+    }
+}

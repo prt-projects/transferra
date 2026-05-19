@@ -133,3 +133,36 @@
 
     color:#ff4d6d;
 }
+
+/* =========================================
+   RESPONSIVE DESIGN (DOWNLOAD PAGE)
+========================================= */
+
+@media screen and (max-width: 600px) {
+    .download-page {
+        padding: 20px; /* Less outer padding on mobile */
+    }
+
+    .download-card {
+        padding: 35px 20px; /* Drastically reduce inner padding to prevent squishing */
+    }
+
+    .download-icon {
+        width: 100px; /* Scale down the logo */
+        margin-bottom: 20px;
+    }
+
+    .download-card h1 {
+        font-size: 1.5rem; /* Slightly shrink the header */
+    }
+
+    .download-meta {
+        padding: 15px; /* Tighter spacing for the file info box */
+    }
+
+    .download-btn {
+        display: block; /* Convert to block so it spans the full width */
+        width: 100%;
+        padding: 15px 0; /* Make it a large, easily tappable target on phones */
+    }
+}

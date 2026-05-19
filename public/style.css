@@ -540,3 +540,73 @@ body{
 
     opacity:1;
 }
+
+
+/* =========================================
+   RESPONSIVE DESIGN (MOBILE & TABLET)
+========================================= */
+
+/* Tablets & Smaller Laptops (Max 900px) */
+@media screen and (max-width: 900px) {
+    .upload-container {
+        padding: 100px 15px 40px;
+    }
+    
+    /* Make the boxes flexible instead of rigid */
+    .drop-zone, 
+    .progress-container, 
+    .sharing-container {
+        width: 100%;
+        max-width: 600px;
+    }
+}
+
+/* Mobile Phones (Max 600px) */
+@media screen and (max-width: 600px) {
+    .topLogo img {
+        width: 140px; /* Smaller logo for mobile */
+    }
+
+    .drop-zone {
+        padding: 30px 20px;
+        min-height: 280px;
+    }
+
+    .icon-container {
+        width: 90px;
+        height: 90px;
+    }
+
+    .icon-container img {
+        width: 75px;
+    }
+
+    .title {
+        font-size: 1.1rem;
+        margin-top: 110px;
+    }
+
+    /* Stack buttons vertically on small screens */
+    .action-buttons {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .action-buttons a,
+    .action-buttons button {
+        width: 100%;
+    }
+
+    /* Shrink the QR code slightly */
+    .qr-container img {
+        width: 180px;
+    }
+
+    .toast {
+        bottom: 20px;
+        right: 20px;
+        left: 20px; /* Stretch across bottom on mobile */
+        text-align: center;
+        font-size: 0.9rem;
+    }
+}
