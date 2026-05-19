@@ -1,22 +1,26 @@
-const nodemailer = require("nodemailer");
+module.exports = async ({ from, to, subject, text, html }) => {
+    const url = 'https://api.brevo.com/v3/smtp/email';
+    
+    const payload = {
+        sender: { email: from, name: "Transferra" },
+        to: [{ email: to }],
+        subject: subject,
+        textContent: text,
+        htmlContent: html
+    };
 
-module.exports = async ({ from, to, subject, text, html}) => {
-    let transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: process.env.SMTP_PORT,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            user: process.env.MAIL_USER, // generated ethereal user
-            pass: process.env.MAIL_PASSWORD, // generated ethereal password
+    const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+            'accept': 'application/json',
+            'api-key': process.env.BREVO_API_KEY,
+            'content-type': 'application/json'
         },
+        body: JSON.stringify(payload)
     });
 
-    // send mail with defined transport object
-    let info = await transporter.sendMail({
-        from: `Transferra <${from}>`, 
-        to: to,
-        subject: `Transferra - File Shared With You`, 
-        text: `${from} shared a file with you via Transferra.`, 
-        html: html,
-    });
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(`Brevo API Error: ${JSON.stringify(errorData)}`);
+    }
 };
