@@ -185,3 +185,57 @@ shareBtn.addEventListener("click", async() => {
     }
 
 });
+
+// EMAIL FORM SUBMISSION
+
+const emailForm = document.getElementById("emailForm");
+
+emailForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const url = fileURL.value;
+    const uuid = url.split("/").pop();
+
+    const emailFrom = document.getElementById("fromEmail").value;
+    const emailTo = document.getElementById("toEmail").value;
+
+    const formData = {
+        uuid: uuid,
+        emailFrom: emailFrom,
+        emailTo: emailTo
+    };
+
+    const sendBtn = emailForm.querySelector('button[type="submit"]');
+    sendBtn.innerText = "Sending...";
+    sendBtn.disabled = true;
+
+    fetch("/api/files/send", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.error) {
+            toast.innerText = data.error;
+            toast.classList.add("show");
+        } else {
+            toast.innerText = "Email Sent Successfully ⚡";
+            toast.classList.add("show");
+            emailForm.reset();
+        }
+        setTimeout(() => toast.classList.remove("show"), 3000);
+    })
+    .catch(err => {
+        console.error(err);
+        toast.innerText = "Error in sending email";
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 3000);
+    })
+    .finally(() => {
+        sendBtn.innerText = "Send File";
+        sendBtn.disabled = false;
+    });
+});
