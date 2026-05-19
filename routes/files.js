@@ -44,6 +44,17 @@ router.post('/send', async (req, res) => {
     file.sender = emailFrom;
     file.receiver = emailTo;
     const response = await file.save();
+    
+    function formatBytes(bytes, decimals = 2) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const dm = decimals < 0 ? 0 : decimals;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+    }
+    const formattedSize = formatBytes(file.size);
+
     // send mail
     const sendMail = require('../services/emailService');
     sendMail({
@@ -54,7 +65,7 @@ router.post('/send', async (req, res) => {
       html: require('../services/emailTemplate')({
                 emailFrom, 
                 downloadLink: `${process.env.APP_BASE_URL}/files/${file.uuid}?source=email` ,
-                size: parseInt(file.size/1000) + ' KB',
+                size: formattedSize,
                 expires: '24 hours'
             })
     }).then(() => {
